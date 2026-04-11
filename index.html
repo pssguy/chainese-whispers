@@ -274,8 +274,8 @@
 
   <!-- Input -->
   <div class="card">
-    <label class="field-label" for="inputText">Starting phrase (English)</label>
-    <textarea id="inputText" rows="2">What goes around, comes around</textarea>
+    <label class="field-label" for="inputText">Starting text — enter or paste</label>
+    <textarea id="inputText" rows="2" placeholder="What goes around, comes around"></textarea>
   </div>
 
   <!-- Controls -->
@@ -307,13 +307,12 @@
 // ═══════════════════════════════════════════════════════════
 // CONFIGURATION — Paste your Gemini API key below
 // ═══════════════════════════════════════════════════════════
-const GEMINI_API_KEY = "AIzaSyAX9gfQXL42xDWA6y7d_diGb5EOdX7j4D8
-";
+const GEMINI_API_KEY = "YOUR_GEMINI_KEY_HERE";
 const GEMINI_MODEL  = "gemini-2.0-flash-lite";
 // ═══════════════════════════════════════════════════════════
 
 const LANGUAGES = [
-  "French","Spanish","German","Japanese","Mandarin Chinese","Korean",
+  "English","French","Spanish","German","Japanese","Mandarin Chinese","Korean",
   "Russian","Arabic","Hindi","Portuguese","Italian","Swedish",
   "Turkish","Thai","Vietnamese","Swahili","Greek","Dutch",
   "Polish","Hebrew","Indonesian","Czech","Finnish","Norwegian"
@@ -364,8 +363,13 @@ function updateControls() {
   }
 }
 
+function getOriginalText() {
+  return getOriginalText() || inputEl.placeholder;
+}
+
 function getCurrentText() {
-  return chain.length > 0 ? chain[chain.length-1].text : inputEl.value.trim();
+  const val = chain.length > 0 ? chain[chain.length-1].text : getOriginalText();
+  return val || inputEl.placeholder;
 }
 
 function getCurrentLang() {
@@ -444,7 +448,7 @@ function setLoading(on) {
 function renderChain() {
   chainCard.style.display = "block";
   chainLabel.textContent = `Translation Chain (${chain.length} step${chain.length>1?"s":""})`;
-  originalQt.textContent = `Original: "${inputEl.value.trim()}"`;
+  originalQt.textContent = `Original: "${getOriginalText()}"`;
 
   chainSteps.innerHTML = "";
   chain.forEach((step, i) => {
@@ -471,7 +475,7 @@ function renderChain() {
       <div class="verdict">
         <div class="verdict-title">🔄 The Verdict</div>
         <div class="verdict-body">
-          <strong>Started with:</strong> "${inputEl.value.trim()}"<br>
+          <strong>Started with:</strong> "${getOriginalText()}"<br>
           <strong>Ended with:</strong> "${last.text}"
         </div>
       </div>`;
@@ -491,7 +495,7 @@ function resetChain() {
 }
 
 function downloadChain() {
-  const lines = ["CHAINESE WHISPERS", `Original: "${inputEl.value.trim()}"`, ""];
+  const lines = ["CHAINESE WHISPERS", `Original: "${getOriginalText()}"`, ""];
   chain.forEach((s, i) => lines.push(`${i+1}. [${s.language}] ${s.text}`));
   const blob = new Blob([lines.join("\n")], { type: "text/plain" });
   const a = document.createElement("a");
