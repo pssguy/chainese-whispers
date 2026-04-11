@@ -364,7 +364,7 @@ function updateControls() {
 }
 
 function getOriginalText() {
-  return getOriginalText() || inputEl.placeholder;
+ return inputEl.value.trim() || inputEl.placeholder;
 }
 
 function getCurrentText() {
